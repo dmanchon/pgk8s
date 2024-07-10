@@ -15,18 +15,41 @@ spec:
     ports:
       - containerPort: 5432
         name: pg
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: pg-service
+  name:  database
 spec:
-  type: NodePort
   selector:
     app.kubernetes.io/name: postgres
+  type:  NodePort
   ports:
-  - name: postgres
-    protocol: TCP
-    port: 5432
-    targetPort: pg
+  - name:  postgres
+    port:  5432
+    targetPort:  5432
+    nodePort: 30000
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io

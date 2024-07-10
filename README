@@ -1,0 +1,4 @@
+`docker build -t pg:v0 .`
+`kind create cluster --config=kind_config.yaml`
+`kind load docker-image pg:v0`
+`kubectl apply -f deploy.yaml`
